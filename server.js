@@ -2,19 +2,26 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const colors = require('colors')
+const cookieParser = require('cookie-parser')
 const connectMongoDB = require('./db/db')
+
+const userRouter = require('./routes/user')
 
 // Initialize express app
 const app = express()
 
-// Bodyparser middleware
+// Bodyparser and Cookieparser middleware
 app.use(express.json())
+app.use(cookieParser())
 
-// .env config
+// Utitilze .env configuration
 dotenv.config()
 
 // Connect to MongoDB
 connectMongoDB()
+
+// Connect routes to app
+app.use('/api', userRouter)
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
@@ -22,7 +29,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.get('/', (req, res) => res.status(200).json({ api: 'server up and running' }))
 
-// Grab the port
+// Port #
 const PORT = process.env.PORT || 6000
 
 // Run Sever
