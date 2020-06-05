@@ -3,7 +3,6 @@ const passport = require('passport')
 const passportConfig = require('../passport')
 const JTW = require('jsonwebtoken')
 const User = require('../models/User')
-const Todo = require('../models/Todo')
 
 const signToken = userID => {
   return JTW.sign({iss: "LambdaCoder", sub: userID}, "LambdaCoder", {expiresIn: "1h"})
@@ -47,5 +46,20 @@ router.get('/logout', passport.authenticate('jwt', {session : false}), (req,res)
   res.clearCookie('access_token');
   res.json({ user: {username : "", role : ""}, success : true });
 });
+
+// Admin
+router.get('/admin', passport.authenticate('jwt', {session: false}), (req, res) => {
+  if (req.user.role === 'admin') {
+    res.status(200).json({ message: "Success! You are an admin" })
+  } else {
+    res.status(403).json({ message: "Denied! You are not an admin" })
+  }
+})
+
+// Authenticated - for data persistance with front end
+router.get('/authenticated', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const { username, role } = req.user
+  res.status(200).json({ user: { username, role }, isAuthenticated: true })
+})
 
 module.exports = router

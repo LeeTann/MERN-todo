@@ -5,7 +5,8 @@ const colors = require('colors')
 const cookieParser = require('cookie-parser')
 const connectMongoDB = require('./db/db')
 
-const userRouter = require('./routes/user')
+const userRouter = require('./routes/User')
+const todoRouter = require('./routes/Todo')
 
 // Initialize express app
 const app = express()
@@ -22,6 +23,7 @@ connectMongoDB()
 
 // Connect routes to app
 app.use('/api', userRouter)
+app.use('/api', todoRouter)
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
